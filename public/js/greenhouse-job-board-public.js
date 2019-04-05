@@ -678,9 +678,13 @@ function greenhouse_jobs(json, jbid){
 	json.jobs.sort(function(a, b){
 		//sort depending on group value
 		if ( group === 'department' ) {
+			if ( a.departments.length == 0 ) return 1;
+			if ( b.departments.length == 0 ) return -1;
 			if ( a.departments[0].name < b.departments[0].name ) return -1;
 			if ( a.departments[0].name > b.departments[0].name ) return 1;
 		} else if ( group === 'office' ) {
+			if ( a.offices.length == 0) return 1;
+			if ( b.offices.length == 0) return -1;
 			if ( a.offices[0].name < b.offices[0].name ) return -1;
 			if ( a.offices[0].name > b.offices[0].name ) return 1;
 		} else if ( group === 'location' ) {
@@ -885,7 +889,11 @@ function greenhouse_jobs(json, jbid){
      		if ( group_headline ) {
      			//get this group headline
      			if ( group === 'department' ) {
-     				this_group = json.jobs[i].departments[0].name;
+     				if( json.jobs[i].departments.length == 0 ){
+		     			this_group = '';
+	     			}else{
+     					this_group = json.jobs[i].departments[0].name;
+     				}
      			} else if ( group === 'office' ) {
      				this_group = json.jobs[i].offices[0].name;
      			} else if ( group === 'location' ) {
