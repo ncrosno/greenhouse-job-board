@@ -150,6 +150,9 @@ class Greenhouse_Job_Board_Public {
 	        'read_full_desc'	=> isset( $options['greenhouse_job_board_read_full_desc'] ) ? $options['greenhouse_job_board_read_full_desc'] : 'Read Full Description',
 	        'hide_full_desc'	=> isset( $options['greenhouse_job_board_hide_full_desc'] ) ? $options['greenhouse_job_board_hide_full_desc'] : 'Hide Full Description',
 	        'hide_forms'		=> 'false',
+	        'hide_last_apply' => 'false',
+	        'autoload_form' => 'false',
+	        'hide_headline' => 'false',
 	        'form_type'			=> isset( $options['greenhouse_job_board_form_type'] ) ? $options['greenhouse_job_board_form_type'] : 'iframe',
 	        'form_fields'		=> isset( $options['greenhouse_job_board_form_fields'] ) ? $options['greenhouse_job_board_form_fields'] : '',
 	        'department_filter'	=> '',
@@ -185,6 +188,15 @@ class Greenhouse_Job_Board_Public {
 	    //if hide_forms is anything other than true, set it to false
 	    if ( $atts['hide_forms'] !== 'true' ) {
 	    	$atts['hide_forms'] = 'false';
+	    }
+	    if ( $atts['hide_last_apply'] !== 'true' ) {
+	    	$atts['hide_last_apply'] = 'false';
+	    }
+	    if ( $atts['autoload_form'] !== 'true' ) {
+	    	$atts['autoload_form'] = 'false';
+	    }
+	    if ( $atts['hide_headline'] !== 'true' ) {
+	    	$atts['hide_headline'] = 'false';
 	    }
 	    //set form_type 
 	    if ( $atts['form_type'] === 'default' ) {
@@ -238,7 +250,7 @@ class Greenhouse_Job_Board_Public {
 	    	 	    	{{#if display_department }}<div class="display_department"><span class="department_label">' . $atts['department_label'] . '</span>{{display_department}}</div>{{/if}}
 		 	    			{{#if display_description }}<div class="display_description"><span class="description_label">' . $atts['description_label'] . '</span>{{{content}}}</div>{{/if}}
 		 	    	</div>
-		 	    	{{#ifeq hide_forms "false"}}<p><a href="#" class="job_apply job_apply_{{id}}" data-opened-text="' . $atts['apply_now_cancel'] . '" data-closed-text="' . $atts['apply_now'] . '">' . $atts['apply_now'] . '</a></p>{{/ifeq}}
+		 	    	{{#ifeq hide_last_apply "false"}}{{#ifeq hide_forms "false"}}<p><a href="#" class="job_apply job_apply_{{id}}" data-opened-text="' . $atts['apply_now_cancel'] . '" data-closed-text="' . $atts['apply_now'] . '">' . $atts['apply_now'] . '</a></p>{{/ifeq}}{{/ifeq}}
 		 	</div>
 	</script>';
 			}
@@ -254,8 +266,23 @@ class Greenhouse_Job_Board_Public {
 			<div class="job job_{{id}} job_{{slug}}" 
 				data-id="{{id}}" 
 				data-slug="{{slug}}" 
-				data-departments="{{departments}}">
-		 	    	<h3 class="job_title">{{title}}</h3>
+				data-departments="{{departments}}">';
+        if($atts['autoload_form'] == 'true'){
+        	$ghjb_html .= '
+		 	   		<h3 class="job_title">
+		 	   		  <a href="#" class="job_apply job_apply_{{id}}">{{title}}</a></h3>
+		 	   ';
+        }
+        else {
+		 	   $ghjb_html .= '
+		 	   		<h3 class="job_title job_goto">
+		 	   		  {{#ifeq autoload_form "true"}}<a href="#" class="job_apply job_apply_{{id}}">{{/ifeq}}
+		 	   		    {{title}}
+		 	   		  {{#ifeq autoload_form "true"}}</a>{{/ifeq}}
+		 	   		</h3>
+		 	   ';
+		 	  }
+		 	$ghjb_html .= '
 					 <div class="job_excerpt">';
 					 if ($atts['board_type'] == 'cycle' && $atts['use_excerpt'] == 1) {
 						 $ghjb_html .= '{{{excerpt}}}';
@@ -284,8 +311,12 @@ class Greenhouse_Job_Board_Public {
 				 			{{#if display_department }}<div class="display_department"><span class="department_label">' . $atts['department_label'] . '</span>{{display_department}}</div>{{/if}}
 			 					{{#if display_description }}<div class="display_description"><span class="description_label">' . $atts['description_label'] . '</span>{{{content}}}</div>{{/if}}
 			 			</div>
-			 			{{#ifeq hide_forms "false"}}<p><a href="#" class="job_apply job_apply_{{id}} button" data-opened-text="' . $atts['apply_now_cancel'] . '" data-closed-text="' . $atts['apply_now'] . '">' . $atts['apply_now'] . '</a></p>{{/ifeq}}
-			 			<p><a href="#" class="return">' . $atts['back'] . '</a></p>
+			 			{{#ifeq hide_last_apply "false"}}
+			 			  {{#ifeq hide_forms "false"}}
+			 			    <p><a href="#" class="job_apply job_apply_{{id}} button" data-opened-text="' . $atts['apply_now_cancel'] . '" data-closed-text="' . $atts['apply_now'] . '">' . $atts['apply_now'] . '</a></p>
+			 			  {{/ifeq}}
+			 			  <p><a href="#" class="return">' . $atts['back'] . '</a></p>
+			 			{{/ifeq}}
 		 			</div>
 		 	</div>
 	</script>';
@@ -316,6 +347,12 @@ class Greenhouse_Job_Board_Public {
 		}
 		if ( $atts['hide_forms'] !== '') {
 			$ghjb_html .= ' data-hide_forms="' . $atts['hide_forms'] . '" ';
+		}
+		if ( $atts['hide_last_apply'] !== '') {
+			$ghjb_html .= ' data-hide_last_apply="' . $atts['hide_last_apply'] . '" ';
+		}
+		if ( $atts['autoload_form'] !== ''){
+			$ghjb_html .= ' data-autoload_form="' . $atts['autoload_form'] . '" ';
 		}
 		if ( $atts['form_type'] !== '' ) {
 			$ghjb_html .= ' data-form_type="' . $atts['form_type'] . '" ';
@@ -354,8 +391,12 @@ class Greenhouse_Job_Board_Public {
 		if ( $atts['hide_forms'] !== 'true' &&
 			 $atts['board_type'] === 'cycle'
 			) {
-			$ghjb_html .= '<div class="cycle-slide"><div class="apply_jobs">
+			$ghjb_html .= '<div class="cycle-slide"><div class="apply_jobs">';
+
+		  if( $atts['hide_headline'] !== 'true' ){
+		    $ghjb_html .= '
 					<h1>' . $options['greenhouse_job_board_apply_headline'] . '</h1>';
+			}
 					//cycle iframe
 					if ( $atts['form_type'] === 'iframe' ) {
 						

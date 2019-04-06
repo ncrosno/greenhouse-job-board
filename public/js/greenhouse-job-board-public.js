@@ -883,7 +883,8 @@ function greenhouse_jobs(json, jbid){
      	if ( 	department_filter_pass &&
      			job_filter_pass &&
      			office_filter_pass &&
-     			location_filter_pass ){
+     			location_filter_pass )
+     	{
      	
      	
      		if ( group_headline ) {
@@ -938,16 +939,16 @@ function greenhouse_jobs(json, jbid){
 	     		jQuery(jbid + ' .all_jobs .jobs').append(jobshtml);
 	     		
 	     		var slidehtml = slide_html_template({
-		 			index: i,
-		 			id: json.jobs[i].id,
-		 			slug: json.jobs[i].slug,
-		 			title: json.jobs[i].title,
-		 			content: decodeHtml( json.jobs[i].content ),
-		 			hide_forms: hide_forms,
-		 			display_description: display_description,
-		 			display_department: display_department,
-		 			display_office: display_office,
-		 			display_location: display_location
+			 			index: i,
+			 			id: json.jobs[i].id,
+			 			slug: json.jobs[i].slug,
+			 			title: json.jobs[i].title,
+			 			content: decodeHtml( json.jobs[i].content ),
+			 			hide_forms: hide_forms,
+			 			display_description: display_description,
+			 			display_department: display_department,
+			 			display_office: display_office,
+			 			display_location: display_location
 	     		});
      			jQuery(jbid + ' .all_jobs').append(slidehtml);
 	     	}	
@@ -1003,4 +1004,10 @@ function ghjb_analytics(eventCategory, eventAction, eventLabel ){
 
 Handlebars.registerHelper('ifeq', function (a, b, options) {
 	if (a == b) { return options.fn(this); }
+});
+
+
+/* Add-on to auto open the form for any shortcodes that include autoload_form='true' */
+jQuery(document).ready(function() {
+  jQuery('.greenhouse-job-board .jobs[data-autoload_form="true"]').parent().find('.job_apply').trigger('click');
 });
