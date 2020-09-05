@@ -278,105 +278,36 @@
 		if (ghjb_d) { console.log( job_questions ); }
 
 		for ( var i = 0; i < job_questions.length; i++){
-			
 			//check that the field is listed if form fields are specified
 			// if (ghjb_d) { console.log(form_fields, job_questions[i].fields[0].name, job_questions[i].label); }
-
-			if ( form_fields[0] === '*' ||
-				 jQuery.inArray( job_questions[i].fields[0].name, form_fields ) >= 0 ||
-				 jQuery.inArray( job_questions[i].label, form_fields ) >= 0  ) {
-				
-				var field_wrap = "<div class='field_wrap field_" + job_questions[i].fields[0].name ;
-				field_wrap += ' field_' + job_questions[i].fields[0].type;
-				var required = '';
-				var hidden = false;
-				var simple_field = true; //true for text,textarea,file
-										//false for checkboxs,select
-				if (job_questions[i].required === true) {
-					required = ' required="true" ';
-					field_wrap += " field_required ";
-				}
-				if ( job_questions[i].fields[0].type === 'hidden' ) {
-					hidden = true;
-				}
-				
-				field_wrap += "' >";
-				//write label for field
-				if ( !hidden ) { //but only if not hidden field
-					field_wrap += "<label for='" + job_questions[i].fields[0].name + "'>" + job_questions[i].label  + "</label>";
-					field_wrap += "<div class='input_container'>";
-				}
-				//detect input type and write proper html for correct type
-				if ( job_questions[i].fields[0].type === 'input_text' ) {
-					field_wrap += "<input type='text' name='" + job_questions[i].fields[0].name + "' id='" + job_questions[i].fields[0].name + "' title='" + job_questions[i].label  + "' " + required;
-				}
-				//textarea
-				else if ( job_questions[i].fields[0].type === 'textarea' ) {
-					field_wrap += "<textarea name='" + job_questions[i].fields[0].name + "' id='" + job_questions[i].fields[0].name + "' title='" + job_questions[i].label  + "' " + required;
-				}
-				//textarea
-				else if ( job_questions[i].fields[0].type === 'hidden' ) {
-					field_wrap += "<input type='hidden' name='" + job_questions[i].fields[0].name + "' value='" + job_questions[i].fields[0].values[0] + "' id='" + job_questions[i].fields[0].name + "' title='" + job_questions[i].label  + "' " + required;
-				}
-				//file
-				else if ( job_questions[i].fields[0].type === 'input_file' ) {
-					field_wrap += "<input type='file' name='" + job_questions[i].fields[0].name + "' id='" + job_questions[i].fields[0].name + "' title='" + job_questions[i].label  + "' " + required;
-				}
-				//select and Yes-No fields
-				else if ( job_questions[i].fields[0].type === 'multi_value_single_select' ) {
-					simple_field = false;
-					field_wrap += "<select name='" + job_questions[i].fields[0].name + "' id='" + job_questions[i].fields[0].name + "' title='" + job_questions[i].label  + "' " + required;
-				}
-				//multiselect checkboxes
-				else if ( job_questions[i].fields[0].type === 'multi_value_multi_select' ) {
-					simple_field = false;
-					// field_wrap += "<select name='" + job_questions[i].fields[0].name + "' id='" + job_questions[i].fields[0].name + "' title='" + job_questions[i].label  + "' " + required;
-					// field_wrap += "<div class='checkboxes' " + required;
-				}
-				else {
-					field_wrap += "<input type='" + job_questions[i].fields[0].type + "' name='" + job_questions[i].fields[0].name + "' id='" + job_questions[i].fields[0].name + "' title='" + job_questions[i].label  + "' " + required;
-				}
-				if ( job_questions[i].fields[0].atts &&
-					 job_questions[i].fields[0].atts !== '' ) {
-					field_wrap += job_questions[i].fields[0].atts;
-				}
-
-				//finish non simple fields
-					//select
-				if ( !simple_field ) {
-					if ( job_questions[i].fields[0].type === 'multi_value_multi_select' ) {
-						// field_wrap += ' multiple ';
-						
-						// field_wrap += '>';
-						for (var j=0; j < job_questions[i].fields[0].values.length; j++){
-						// 	field_wrap += '<label>';
-						// 	field_wrap += "<input type='checkbox' value='"+job_questions[i].fields[0].values[j].value+"' name='" + job_questions[i].fields[0].name + "' >";
-						// 	field_wrap += job_questions[i].fields[0].values[j].label + '</label><br/>';
-							// field_wrap += "<option value='"+job_questions[i].fields[0].values[j].value+"'>"+job_questions[i].fields[0].values[j].label+"</option>";
-						}
-						// field_wrap += '</div></div>';
-						// field_wrap += "</select></div>";
-
-					}
-					else if ( job_questions[i].fields[0].type === 'multi_value_single_select' ) {
-						field_wrap += ">";
-						for (var j=0; j < job_questions[i].fields[0].values.length; j++){
-							field_wrap += "<option value='"+job_questions[i].fields[0].values[j].value+"'>"+job_questions[i].fields[0].values[j].label+"</option>";
-						}
-						field_wrap += "</select></div>";
-					}
-				}
-				// back to simple fields 
-				else {
-					field_wrap += " />";
-					if ( !hidden ) {
-						field_wrap += "</div>";
-					}
-				}
-				$(jbid + " #apply_form").append(field_wrap);
-			}
-			
+			if ( 
+			  form_fields[0] === '*' ||
+			  jQuery.inArray( job_questions[i].fields[0].name, form_fields ) >= 0 ||
+			  jQuery.inArray( job_questions[i].label, form_fields ) >= 0  
+			) 
+			{ ghjb_form_field( jbid, job_questions[i] ); }
 		}
+
+    // handle eeoc/compliance fields:
+    if ( this_job[0].compliance.length > 0 ){
+    	$(jbid + " #apply_form").append("<hr class='ghjb_compliance_sep'>");
+    }
+		for ( var i = 0; i < this_job[0].compliance.length; i++){
+			var compl = this_job[0].compliance[i];
+
+			var compl_desc = "<div class='field_wrap ghjb_compliance'>"+compl.description.replace(/&lt;/g,"<").replace(/&gt;/g,">")+"</div>";
+			$(jbid + " #apply_form").append(compl_desc);
+
+			for ( var j = 0; j < compl.questions.length; j++){
+				if ( 
+				  form_fields[0] === '*' ||
+				  jQuery.inArray( compl.questions[j].fields[0].name, form_fields ) >= 0 ||
+				  jQuery.inArray( compl.questions[j].label, form_fields ) >= 0  
+				) 
+				{ ghjb_form_field( jbid, compl.questions[j] ); }
+			}
+		}
+
 		
 		var submit_button = "<div class='field_wrap field_submit'><input type='button' class='submit button' value='Submit Application' /></div></div>";
 		
@@ -389,13 +320,103 @@
 			ghjb_apply_form_loaded(true);
 		}
 	}
+
+	function ghjb_form_field(jbid, quest){
+
+		var field_wrap = "<div class='field_wrap field_" + quest.fields[0].name ;
+		field_wrap += ' field_' + quest.fields[0].type;
+		var required = '';
+		var hidden = false;
+		var simple_field = true; //true for text,textarea,file
+								//false for checkboxs,select
+		if (quest.required === true) {
+			required = ' required="true" ';
+			field_wrap += " field_required ";
+		}
+		if ( quest.fields[0].type === 'hidden' ) {
+			hidden = true;
+		}
+		
+		field_wrap += "' >";
+		//write label for field
+		if ( !hidden ) { //but only if not hidden field
+			field_wrap += "<label for='" + quest.fields[0].name + "'>" + quest.label  + "</label>";
+			field_wrap += "<div class='input_container'>";
+		}
+		// detect input type and write proper html for correct type
+		if ( quest.fields[0].type === 'input_text' ) {
+			field_wrap += "<input type='text' name='" + quest.fields[0].name + "' id='" + quest.fields[0].name + "' title='" + quest.label  + "' " + required;
+		}
+		// textarea
+		else if ( quest.fields[0].type === 'textarea' ) {
+			field_wrap += "<textarea name='" + quest.fields[0].name + "' id='" + quest.fields[0].name + "' title='" + quest.label  + "' " + required;
+		}
+		// hidden
+		else if ( quest.fields[0].type === 'hidden' ) {
+			field_wrap += "<input type='hidden' name='" + quest.fields[0].name + "' value='" + quest.fields[0].values[0] + "' id='" + quest.fields[0].name + "' title='" + quest.label  + "' " + required;
+		}
+		// file
+		else if ( quest.fields[0].type === 'input_file' ) {
+			field_wrap += "<input type='file' name='" + quest.fields[0].name + "' id='" + quest.fields[0].name + "' title='" + quest.label  + "' " + required;
+		}
+		// select and Yes-No fields
+		else if ( quest.fields[0].type === 'multi_value_single_select' ) {
+			simple_field = false;
+			field_wrap += "<select name='" + quest.fields[0].name + "' id='" + quest.fields[0].name + "' title='" + quest.label  + "' " + required;
+		}
+		// multiselect checkboxes
+		else if ( quest.fields[0].type === 'multi_value_multi_select' ) {
+			simple_field = false;
+			// field_wrap += "<select name='" + quest.fields[0].name + "' id='" + quest.fields[0].name + "' title='" + quest.label  + "' " + required;
+			// field_wrap += "<div class='checkboxes' " + required;
+		}
+		else {
+			field_wrap += "<input type='" + quest.fields[0].type + "' name='" + quest.fields[0].name + "' id='" + quest.fields[0].name + "' title='" + quest.label  + "' " + required;
+		}
+		if ( quest.fields[0].atts &&
+			 quest.fields[0].atts !== '' ) {
+			field_wrap += quest.fields[0].atts;
+		}
+
+		// finish non simple fields
+			//select
+		if ( !simple_field ) {
+			if ( quest.fields[0].type === 'multi_value_multi_select' ) {
+				// field_wrap += ' multiple ';
+				// field_wrap += '>';
+				// for (var j=0; j < quest.fields[0].values.length; j++){
+				// 	field_wrap += '<label>';
+				// 	field_wrap += "<input type='checkbox' value='"+quest.fields[0].values[j].value+"' name='" + quest.fields[0].name + "' >";
+				// 	field_wrap += quest.fields[0].values[j].label + '</label><br/>';
+				//  field_wrap += "<option value='"+quest.fields[0].values[j].value+"'>"+quest.fields[0].values[j].label+"</option>";
+				// }
+				// field_wrap += '</div></div>';
+				// field_wrap += "</select></div>";
+			}
+			else if ( quest.fields[0].type === 'multi_value_single_select' ) {
+				field_wrap += ">";
+				for (var j=0; j < quest.fields[0].values.length; j++){
+					field_wrap += "<option value='"+quest.fields[0].values[j].value+"'>"+quest.fields[0].values[j].label+"</option>";
+				}
+				field_wrap += "</select></div>";
+			}
+		}
+		// back to simple fields 
+		else {
+			field_wrap += " />";
+			if ( !hidden ) {
+				field_wrap += "</div>";
+			}
+		}
+		$(jbid + " #apply_form").append(field_wrap);
+	}
 	
 	function jobs_scroll_top(this_caller){
-		//get ghjb id
+		// get ghjb id
 		var this_id = '#' + $(this_caller).parents('.greenhouse-job-board').attr('id');
 		// if (ghjb_d) { console.log(this_id); }
 		
-		//scroll to top of section
+		// scroll to top of section
 		$('html, body').animate({
         	scrollTop: $(this_id).offset().top 
 	    }, 500);
